@@ -2,14 +2,14 @@
 header("Content-Type: application/json");
 include 'db.php';
 
-$sql = "SELECT * FROM productos";
+$sql = "SELECT id_producto, descripcion_producto, precio, imagen FROM productos";
 $result = $conn->query($sql);
 
 $productos = array();
 while ($row = $result->fetch_assoc()) {
-    // Convertir la imagen en Base64 si existe
+    // Solo devolver la ruta de la imagen
     if (!empty($row["imagen"]) && file_exists($row["imagen"])) {
-        $row["imagen"] = base64_encode(file_get_contents($row["imagen"]));
+        $row["imagen"] = $row["imagen"]; // Mantiene la URL sin convertir a Base64
     } else {
         $row["imagen"] = null; // Si no hay imagen
     }
@@ -17,6 +17,6 @@ while ($row = $result->fetch_assoc()) {
     $productos[] = $row;
 }
 
-echo json_encode($productos);
+echo json_encode($productos, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 $conn->close();
 ?>
